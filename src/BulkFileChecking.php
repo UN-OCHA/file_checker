@@ -222,7 +222,7 @@ class BulkFileChecking {
 
       // If there are files subsequent to the last checked file, check them.
       if (count($fileIds) > 0) {
-        $runState = $this->checkFiles($fileIds, $runState, $endTime, $shouldLog);
+        $runState = $this->checkFiles($fileIds, $runState, $endTime);
       }
       // If there are not, then checking has been completed.
       else {
