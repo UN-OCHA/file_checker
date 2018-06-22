@@ -40,6 +40,7 @@ function file_checker_requirements($phase) {
     $requirements['file_checker']['title'] = t('Missing files');
     $requirements['file_checker']['value'] = \Drupal::service('file_checker.bulk_file_checking')->missingStatus();
     $requirements['file_checker']['description'] = \Drupal::service('file_checker.bulk_file_checking')->lastStatus();
+    $requirements['file_checker']['severity'] = REQUIREMENT_OK;
     if (\Drupal::service('file_checker.bulk_file_checking')->missingCount() > 0) {
       $requirements['file_checker']['severity'] = REQUIREMENT_ERROR;
     }
