@@ -5,4 +5,4 @@ services:
 
   file_checker.bulk_file_checking:
     class: Drupal\file_checker\BulkFileChecking
-    arguments: ['@state', '@logger.factory', '@entity.query', '@date.formatter', '@file_checker.single_file_checking']
+    arguments: ['@state', '@logger.factory', '@entity.query', '@date.formatter', '@file_checker.single_file_checking', '@router.route_provider']

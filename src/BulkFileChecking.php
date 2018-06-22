@@ -7,6 +7,7 @@ use Drupal\Core\State\StateInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Routing\RouteProvider;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 
@@ -48,6 +49,13 @@ class BulkFileChecking {
   protected $dateFormatter;
 
   /**
+   * The route provider.
+   *
+   * @var \Drupal\Core\Routing\RouteProvider
+   */
+  protected $routeProvider;
+
+  /**
    * The FileChecker SingleFileChecking service.
    */
   protected $singleFileChecking;
@@ -65,12 +73,15 @@ class BulkFileChecking {
    *   The date formatter service.
    * @param $single_file_checking
    *   The FileChecker SingleFileChecking service.
+   * @param $route_provider
+   *   The route provider service.
    */
-  public function __construct(StateInterface $state, LoggerChannelFactoryInterface $logger_factory, QueryFactory $query_factory, DateFormatterInterface $date_formatter, $single_file_checking) {
+  public function __construct(StateInterface $state, LoggerChannelFactoryInterface $logger_factory, QueryFactory $query_factory, DateFormatterInterface $date_formatter, $single_file_checking, RouteProvider $route_provider) {
     $this->state = $state;
     $this->logger = $logger_factory->get('file_checker');
     $this->queryFactory = $query_factory;
     $this->dateFormatter = $date_formatter;
+    $this->routeProvider = $route_provider;
     $this->singleFileChecking = $single_file_checking;
   }
 
@@ -334,14 +345,23 @@ class BulkFileChecking {
    */
   public function lastStatus() {
     $last_run_start = $this->state->get('file_checker.last_run_start');
-    if (empty($last_run_start)) {
+    if (!is_integer($last_run_start)) {
       $statusReport = t("Files have never been checked.");
     }
     else {
       $last_run_end = $this->state->get('file_checker.last_run_end');
-      $ago = $this->dateFormatter->formatTimeDiffSince($last_run_end);
-      $duration = $this->dateFormatter->formatDiff($last_run_start, $last_run_end);
-      $statusReport = t("Last check completed @time_elapsed ago, took @duration.", array('@time_elapsed' => $ago, '@duration' => $duration));
+      if (!is_integer($last_run_end)) {
+        # This should never happen.
+        $statusReport = t("A run started but its end has not been recorded.");
+      }
+      else {
+        $ago = $this->dateFormatter->formatTimeDiffSince($last_run_end);
+        $duration = $this->dateFormatter->formatDiff($last_run_start, $last_run_end);
+        $statusReport = t("Last check completed @time_elapsed ago, took @duration.", [
+          '@time_elapsed' => $ago,
+          '@duration' => $duration
+        ]);
+      }
     }
     return $statusReport;
   }
@@ -404,11 +424,18 @@ class BulkFileChecking {
     }
     else {
       $missingReport = $this->formatPlural($missingCount, "1 file is missing.", "@count files are missing.");
-      $missingReport = array(
-        '#type' => 'link',
-        '#title' => $missingReport,
-        '#url' => Url::fromRoute('view.files_missing.page_1'),
-      );
+
+      // The url cannot be generated if the view has been deleted by a sitebuilder.
+      // It's tricky to trap exceptions from Url::fromRoute()
+      $viewRoute = 'view.files_missing.page_1';
+      $viewExists = count($this->routeProvider->getRoutesByNames([$viewRoute])) === 1;
+      if ($viewExists) {
+        $missingReport = [
+          '#type' => 'link',
+          '#title' => $missingReport,
+          '#url' => Url::fromRoute($viewRoute),
+        ];
+      }
     }
     return $missingReport;
   }
