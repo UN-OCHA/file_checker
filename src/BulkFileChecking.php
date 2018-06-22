@@ -4,7 +4,7 @@ namespace Drupal\file_checker;
 
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\State\StateInterface;
-use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -29,7 +29,7 @@ class BulkFileChecking {
   /**
    * The File Checker logger channel.
    *
-   * @var LoggerChannelFactory $logger
+   * @var \Drupal\Core\Logger\LoggerChannelInterface $logger
    */
   protected $logger;
 
@@ -57,7 +57,7 @@ class BulkFileChecking {
    *
    * @param \Drupal\Core\State\StateInterface $state
    *   The state service.
-   * @param \Drupal\Core\Logger\LoggerChannelFactory $logger_factory
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger channel factory service.
    * @param \Drupal\Core\Entity\Query\QueryFactory $query_factory
    *   The entity query factory service.
@@ -66,7 +66,7 @@ class BulkFileChecking {
    * @param $single_file_checking
    *   The FileChecker SingleFileChecking service.
    */
-  public function __construct(StateInterface $state, LoggerChannelFactory $logger_factory, QueryFactory $query_factory, DateFormatterInterface $date_formatter, $single_file_checking) {
+  public function __construct(StateInterface $state, LoggerChannelFactoryInterface $logger_factory, QueryFactory $query_factory, DateFormatterInterface $date_formatter, $single_file_checking) {
     $this->state = $state;
     $this->logger = $logger_factory->get('file_checker');
     $this->queryFactory = $query_factory;

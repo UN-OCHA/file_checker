@@ -2,12 +2,11 @@
 
 namespace Drupal\file_checker;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\file\FileInterface;
-use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Config\ConfigFactory;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Checks a single file entity.
@@ -24,14 +23,14 @@ class SingleFileChecking {
   /**
    * The File Checker logger channel.
    *
-   * @var LoggerChannelFactory $logger
+   * @var \Drupal\Core\Logger\LoggerChannelInterface $logger
    */
   protected $logger;
 
   /**
    * The File Checker checking queue.
    *
-   * @var QueueInterface $checkingQueue
+   * @var \Drupal\Core\Queue\QueueInterface $checkingQueue
    */
   protected $checkingQueue;
 
@@ -44,17 +43,18 @@ class SingleFileChecking {
 
   /**
    * Creates a new SingleFileChecking object.
+   * @todo Use QueueFactoryInterface https://www.drupal.org/node/2824389
    *
-   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The file storage.
-   * @param \Drupal\Core\Logger\LoggerChannelFactory $logger_factory
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger channel factory service.
    * @param \Drupal\Core\Queue\QueueFactory $queue_factory
    *   The queue factory service.
-   * @param \Drupal\Core\Config\ConfigFactory $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
    */
-  public function __construct(EntityTypeManager $entity_type_manager, LoggerChannelFactory $logger_factory, QueueFactory $queue_factory, ConfigFactory $config_factory) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, LoggerChannelFactoryInterface $logger_factory, QueueFactory $queue_factory, ConfigFactoryInterface $config_factory) {
     $this->fileStorage = $entity_type_manager->getStorage('file');
     $this->logger = $logger_factory->get('file_checker');
     $this->checkingQueue = $queue_factory->get('file_checker');
