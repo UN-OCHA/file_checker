@@ -22,7 +22,6 @@ function file_checker_install() {
  * Implements hook_uninstall().
  */
 function file_checker_uninstall() {
-  // @todo There is currently no way to uninstall an added basefield with data.
   \Drupal::state()->delete('file_checker.background_last_checked_file');
   \Drupal::state()->delete('file_checker.background_files_checked_count');
   \Drupal::state()->delete('file_checker.background_files_missing_count');

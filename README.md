@@ -22,8 +22,6 @@ It offers the following features:
  * It works with files stored locally or remotely.
  * It should work with any quantity of files.
 
-WARNING! (D8 only) Once you have started file checking, File checker cannot be 
-uninstalled.
 
 USER INTERFACE
 --------------
@@ -133,11 +131,6 @@ INSTALLATION
    https://www.drupal.org/docs/8/extending-drupal/installing-contributed-modules
    for further information.
 
-WARNING! (D8 only) Once you have started file checking, File checker cannot be uninstalled.
-This is because it adds a 'missing' basefield to Drupal's file entity, and there
-is no scalable way to remove such a field at this time. However, there is no reason
-for this to be a significant problem: if you don't run File checker, it doesn't
-do anything.
 
 DRUPAL 7
 --------
