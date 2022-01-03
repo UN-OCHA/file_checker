@@ -10,9 +10,10 @@
  */
 function file_checker_install() {
   // Create field storage for the 'missing' base field.
-  $entity_manager = \Drupal::entityManager();
-  $definition = $entity_manager->getFieldStorageDefinitions('file')['missing'];
-  $entity_manager->onFieldStorageDefinitionCreate($definition);
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_storage = \Drupal::service('field_storage_definition.listener');
+  $definition = $entity_field_manager->getFieldStorageDefinitions('file')['missing'];
+  $field_storage->onFieldStorageDefinitionCreate($definition);
 
   // Start with 1 file per second as the checking speed on a new installation.
   \Drupal::state()->set('file_checker.speed', 1);

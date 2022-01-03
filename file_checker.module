@@ -14,7 +14,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *
  * Adds a 'missing' basefield to the core file entity.
  */
-function file_checker_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+function file_checker_entity_base_field_info(EntityTypeInterface $entity_type) {
   if ($entity_type->id() == 'file') {
     $fields = array();
     $fields['missing'] = BaseFieldDefinition::create('boolean')

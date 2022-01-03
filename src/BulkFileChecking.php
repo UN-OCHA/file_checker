@@ -2,10 +2,9 @@
 
 namespace Drupal\file_checker;
 
-use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Routing\RouteProvider;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -35,11 +34,11 @@ class BulkFileChecking {
   protected $logger;
 
   /**
-   * The entity query service.
+   * The entity type manager.
    *
-   * @var QueryFactory $queryFactory
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $queryFactory;
+  protected $entityTypeManager;
 
   /**
    * The date formatter service.
@@ -67,8 +66,8 @@ class BulkFileChecking {
    *   The state service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger channel factory service.
-   * @param \Drupal\Core\Entity\Query\QueryFactory $query_factory
-   *   The entity query factory service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
    * @param $single_file_checking
@@ -76,10 +75,10 @@ class BulkFileChecking {
    * @param $route_provider
    *   The route provider service.
    */
-  public function __construct(StateInterface $state, LoggerChannelFactoryInterface $logger_factory, QueryFactory $query_factory, DateFormatterInterface $date_formatter, $single_file_checking, RouteProvider $route_provider) {
+  public function __construct(StateInterface $state, LoggerChannelFactoryInterface $logger_factory, EntityTypeManagerInterface $entity_type_manager, DateFormatterInterface $date_formatter, $single_file_checking, RouteProvider $route_provider) {
     $this->state = $state;
     $this->logger = $logger_factory->get('file_checker');
-    $this->queryFactory = $query_factory;
+    $this->entityTypeManager = $entity_type_manager;
     $this->dateFormatter = $date_formatter;
     $this->routeProvider = $route_provider;
     $this->singleFileChecking = $single_file_checking;
@@ -282,7 +281,7 @@ class BulkFileChecking {
    *   An entity query object selecting the file entities to be checked.
    */
   public function query() {
-    return $this->queryFactory->get('file');
+    return $this->entityTypeManager->getStorage('file')->getQuery();
   }
 
   /**
@@ -434,6 +433,11 @@ class BulkFileChecking {
           '#type' => 'link',
           '#title' => $missingReport,
           '#url' => Url::fromRoute($viewRoute),
+        ];
+      }
+      else {
+        $missingReport = [
+          '#markup' => $missingReport,
         ];
       }
     }
