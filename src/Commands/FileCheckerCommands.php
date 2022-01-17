@@ -97,6 +97,7 @@ class FileCheckerCommands extends DrushCommands {
    *
    * @param $csv
    *   CSV file that contains two columns, the current (wrong) file path and the actual file path.
+   *   The CSV file has five columns: Fid,Name,Type,Path,"Actual Path"
     * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
    * @option log
    *   Log this execution.
@@ -140,27 +141,37 @@ class FileCheckerCommands extends DrushCommands {
       array_walk($data, 'trim');
 
       // If either field is blank, skip!
-      if (empty($data[0]) || empty($data[1])) {
+      if (empty($data[3]) || empty($data[4])) {
         $this->output->writeln(dt('WARNING: Skipping empty data on line %line.', ['%line' => $line]));
         continue;
       }
 
-      // We now have the file we want on disk in $data[0] and the current on-disk file in $data[1].
+      // We now have the file we want on disk in $data[3] and the current on-disk file in $data[4].
       // Check how sane this is.
-      $source = $this->getpathByUri($data[1]);
+      $source = $this->getpathByUri($data[4]);
       if (!file_exists($source)) {
-        $this->output->writeln(dt('ERROR: Source file %source does not exist on line %line', ['%source' => $data[1], '%line' => $line])); 
+        $this->output->writeln(dt('ERROR: Source file %source does not exist on line %line', ['%source' => $data[4], '%line' => $line]));
         continue;
       }
 
-      $dest = $this->getFileByUri($data[0]);
-      if ($dest !== NULL) {
-        $this->output->writeln(dt('ERROR: Destination file %dest already exists on line %line', ['%dest' => $data[0], '%line' => $line]));
+      // And this one *should* be missing.
+      $dest = $this->getpathByUri($data[3]);
+      if (file_exists($dest)) {
+        $this->output->writeln(dt('ERROR: Destination file %dest already exists on line %line', ['%dest' => $data[3], '%line' => $line]));
         continue;
       }
 
-      $this->output->writeln(dt('INFO: Move %source => %dest', ['%source' => $data[1], '%dest' => $data[0]]));
-      \Drupal::service('file_system')->move($data[1], $data[0], FileSystemInterface::EXISTS_REPLACE);
+      // Becase getFileByUri returns a database entry, this *should* succeeed. The path does not exist on disk, though.
+      $entity = $this->getFileByUri($data[3]);
+      if ($entity == NULL) {
+        $this->output->writeln(dt('ERROR: Unable to load the file entity for %dest on line %line', ['%dest' => $data[3], '%line' => $line]));
+        continue;
+      }
+
+      if (!empty($options['log'])) {
+        $this->output->writeln(dt('INFO: Move %source => %dest', ['%source' => $data[4], '%dest' => $data[3]]));
+      }
+      \Drupal::service('file_system')->move($data[4], $data[0], FileSystemInterface::EXISTS_REPLACE);
     }
 
     // Fin.
