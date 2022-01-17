@@ -2,5 +2,13 @@
     "name": "unocha/file_checker",
     "description": "Verifies that files managed by Drupal actually exist at the location where Drupal believes they are.",
     "type": "drupal-module",
-    "license": "GPL-2.0+"
+    "license": "GPL-2.0+",
+
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^10"
+            }
+        }
+    }
 }
