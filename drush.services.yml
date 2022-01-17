@@ -1,0 +1,5 @@
+services:
+  file_checker.commands:
+    class: \Drupal\file_checker\Commands\FileCheckerCommands
+    tags:
+      - { name: drush.command }
