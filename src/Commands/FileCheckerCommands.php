@@ -178,10 +178,22 @@ class FileCheckerCommands extends DrushCommands {
     fclose($fp)
   }
 
+  /**
+   * Helper to fetch the actual file system path for a stream wrapper uri.
+   *
+   * @param $uri
+   *   A Drupal stream wrapper uri.
+   */
   private function getPathByUri($uri) {
     return \Drupal::service('file_system')->realpath($uri);
   }
 
+  /**
+   * Helper to fetch a file entity by stream wrapper uri.
+   *
+   * @param $uri
+   *   A Drupal stream wrapper uri.
+   */
   private function getFileByUri($uri) {
     $files = \Drupal::entityTypeManager()
       ->getStorage('file')
