@@ -163,7 +163,7 @@ class FileCheckerCommands extends DrushCommands {
 
       // Becase getFileByUri returns a database entry, this *should* succeeed. The path does not exist on disk, though.
       $entity = $this->getFileByUri($data[3]);
-      if ($entity == NULL) {
+      if ($entity === NULL) {
         $this->output->writeln(dt('ERROR: Unable to load the file entity for %dest on line %line', ['%dest' => $data[3], '%line' => $line]));
         continue;
       }
@@ -175,7 +175,7 @@ class FileCheckerCommands extends DrushCommands {
     }
 
     // Fin.
-    fclose($fp)
+    fclose($fp);
   }
 
   /**
