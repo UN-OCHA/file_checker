@@ -148,20 +148,22 @@ class FileCheckerCommands extends DrushCommands {
 
       // We now have the file we want on disk in $data[3] and the current on-disk file in $data[4].
       // Check how sane this is.
-      $source = $this->getpathByUri($data[4]);
-      if (!file_exists($source)) {
-        $this->output->writeln(dt('ERROR: Source file %source does not exist on line %line', ['%source' => $data[4], '%line' => $line]));
-        continue;
-      }
 
-      // And this one *should* be missing.
+      // This one should be missing.
       $dest = $this->getpathByUri($data[3]);
       if (file_exists($dest)) {
         $this->output->writeln(dt('ERROR: Destination file %dest already exists on line %line', ['%dest' => $data[3], '%line' => $line]));
         continue;
       }
 
-      // Becase getFileByUri returns a database entry, this *should* succeeed. The path does not exist on disk, though.
+      // This one should be present.
+      $source = $this->getpathByUri($data[4]);
+      if (!file_exists($source)) {
+        $this->output->writeln(dt('ERROR: Source file %source does not exist on line %line', ['%source' => $data[4], '%line' => $line]));
+        continue;
+      }
+
+      // Becase getFileByUri returns a database entry, this *should* succeeed even though the path does not (yet) exist on disk.
       $entity = $this->getFileByUri($data[3]);
       if ($entity === NULL) {
         $this->output->writeln(dt('ERROR: Unable to load the file entity for %dest on line %line', ['%dest' => $data[3], '%line' => $line]));
@@ -171,7 +173,7 @@ class FileCheckerCommands extends DrushCommands {
       if (!empty($options['log'])) {
         $this->output->writeln(dt('INFO: Move %source => %dest', ['%source' => $data[4], '%dest' => $data[3]]));
       }
-      \Drupal::service('file_system')->move($data[4], $data[0], FileSystemInterface::EXISTS_REPLACE);
+      \Drupal::service('file_system')->move($data[4], $data[3], FileSystemInterface::EXISTS_REPLACE);
     }
 
     // Fin.
