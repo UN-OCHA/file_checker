@@ -71,7 +71,7 @@ class FileCheckerCommands extends DrushCommands {
    */
   public function checkingExecute($seconds, array $options = ['log' => null]) {
     $this->output->writeln(dt('Files will be checked for up to @seconds seconds. Checking now ...', array('@seconds' => $seconds)));
-    $runState = \Drupal::service('file_checker.bulk_file_checking')->executeInBackground($seconds, drush_get_option('log',FALSE));
+    $runState = \Drupal::service('file_checker.bulk_file_checking')->executeInBackground($seconds, $options['log'] ?: FALSE);
     if ($runState['aborted']) {
       $this->output->writeln(dt("File checking has not been previously started, checking aborted."));
       $this->output->writeln(dt("To start checking, first run 'drush file-checking-start'."));
