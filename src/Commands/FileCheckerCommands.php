@@ -171,7 +171,7 @@ class FileCheckerCommands extends DrushCommands {
       if (!empty($options['log'])) {
         $this->output->writeln(dt('INFO: Move %source => %dest', ['%source' => $data[4], '%dest' => $data[3]]));
       }
-      \Drupal::service('file_system')->move($data[4], $data[0], FileSystemInterface::EXISTS_REPLACE);
+      \Drupal::service('file_system')->move($data[4], $data[3], FileSystemInterface::EXISTS_REPLACE);
     }
 
     // Fin.
